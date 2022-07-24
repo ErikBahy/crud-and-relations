@@ -5,40 +5,112 @@ const Order = require("./models/Order");
 
 const mongoose = require("mongoose");
 
-router.get("/", (req, res, next) => {
-  Product.find()
-    .exec()
-    .then((docs) => {
-      console.log(docs);
-      res.status(200).json(docs);
-    })
-    .catch((err) => {
-      console.log(err);
-      res.status(500).json({ error: err });
-    });
+//get all  products
+/**
+ * @swagger
+ * /products:
+ *   get:
+ *     description: All products
+ *     responses:
+ *       200:
+ *         description: Returns all the products
+ */
+
+router.get("/", async (req, res, next) => {
+  try {
+    res.json(await Product.find());
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: err });
+  }
 });
 
-router.post("/", (req, res, next) => {
-  const product = new Product({
-    _id: new mongoose.Types.ObjectId(),
-    name: req.body.name,
-    price: req.body.price,
-  });
-  product
-    .save()
-    .then((result) => {
-      console.log(result);
-      res.status(201).json({
-        message: "handling POST requests to /products",
-        createdProduct: result,
-      });
-    })
-    .catch((err) => {
-      console.log(err);
-      res.status(500).json({ error: err });
+// create a product
+/**
+ * @swagger
+ * /products:
+ *   post:
+ *     parameters:
+ *      - in: body
+ *        name: product
+ *        description: New product
+ *        schema:
+ *          type: object
+ *          properties:
+ *            name:
+ *              type: string
+ *            price:
+ *              type: number
+ *
+ *     responses:
+ *       201:
+ *         description: Created
+ */
+
+// router.post("/", (req, res, next) => {
+//   const product = new Product({
+//     _id: new mongoose.Types.ObjectId(),
+//     name: req.body.name,
+//     price: req.body.price,
+//   });
+//   product
+//     .save()
+//     .then((result) => {
+//       console.log(result);
+//       res.status(201).json({
+//         message: "handling POST requests to /products",
+//         createdProduct: result,
+//       });
+//     })
+//     .catch((err) => {
+//       console.log(err);
+//       res.status(500).json({ error: err });
+//     });
+// });
+router.post("/", async (req, res) => {
+  try {
+    const newProduct = new Product({
+      _id: new mongoose.Types.ObjectId(),
+      name: req.body.name,
+      price: req.body.price,
     });
+    await newProduct.save();
+    res.json(newProduct);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: error });
+  }
 });
-router.post("/:id", function (req, res) {
+
+//add an order`
+
+/**
+ * @swagger
+ * /products/{id}:
+ *   post:
+ *     parameters:
+ *      - in: path
+ *        name: id
+ *        required: true
+ *        type: string
+ *        description: The product ID.
+ *      - in: body
+ *        name: product
+ *        description: Update product
+ *        schema:
+ *          type: object
+ *          properties:
+ *            name:
+ *              type: string
+ *            quantity:
+ *              type: string
+ *
+ *     responses:
+ *       201:
+ *         description: Created
+ */
+
+/*router.post("/:id", function (req, res) {
   // Create a new note and pass the req.body to the entry
   Order.create(req.body)
     .then(function (dbOrder) {
@@ -60,74 +132,124 @@ router.post("/:id", function (req, res) {
       res.json(err);
     });
 });
-// Route for retrieving a Product by id and populating it's orders.
-router.get("/:id", function (req, res) {
-  // Using the id passed in the id parameter, prepare a query that finds the matching one in our db...
-  Product.findOne({ _id: req.params.id })
-    // ..and populate all of the notes associated with it
-    .populate("orders")
-    .then(function (dbProduct) {
-      // If we were able to successfully find an Product with the given id, send it back to the client
-      res.json(dbProduct);
-    })
-    .catch(function (err) {
-      // If an error occurred, send it to the client
-      res.json(err);
-    });
-});
-router.get("/:id", (req, res, next) => {
-  const id = req.params.id;
-  Product.findById(id)
-    .exec()
-    .then((doc) => {
-      console.log(doc);
-      if (doc) {
-        res.status(200).json(doc);
-      } else {
-        res.status(404).json({
-          message: "no valid entry for given id",
-        });
-      }
-    })
-    .catch((err) => {
-      console.log(err);
-      res.status(500).json({ error: err });
-    });
+*/
+
+router.post("/:id", async (req, res) => {
+  try {
+    const dbOrder = await Order.create(req.body);
+    const updatedProduct = await Product.findOneAndUpdate(
+      { _id: req.params.id },
+      { $push: { orders: dbOrder._id } },
+      { new: true }
+    );
+    res.json(updatedProduct);
+  } catch (error) {
+    res.json(error);
+  }
 });
 
-router.patch("/:id", (req, res, next) => {
+// Route for retrieving a Product by id and populating it's orders.
+
+/**
+ * @swagger
+ * /products/{id}:
+ *   get:
+ *     parameters:
+ *      - in: path
+ *        name: id
+ *        required: true
+ *        type: string
+ *        description: The product ID.
+ *     description: Get a product by id
+ *     responses:
+ *       200:
+ *         description: Returns the requested product
+ */
+
+router.get("/:id", async (req, res) => {
+  try {
+    const populateProduct = await Product.findOne({
+      _id: req.params.id,
+    }).populate("orders");
+    res.json(populateProduct);
+  } catch (error) {
+    res.json(error);
+  }
+});
+
+/**
+ * @swagger
+ * /products/{id}:
+ *   patch:
+ *     parameters:
+ *      - in: path
+ *        name: id
+ *        required: true
+ *        type: string
+ *        description: The product ID.
+ *      - in: body
+ *        name: product
+ *        description: Update product
+ *        schema:
+ *          type: array
+ *          properties:
+ *            propName:
+ *              type: string
+ *            value:
+ *              type: string
+ *
+ *     responses:
+ *       201:
+ *         description: Created
+ */
+
+router.patch("/:id", async (req, res, next) => {
   const id = req.params.id;
   const updateOps = {};
   for (const ops of req.body) {
     updateOps[ops.propName] = ops.value;
   }
-  Product.update({ _id: id }, { $set: updateOps })
-    .exec()
-    .then((result) => {
-      console.log(result);
-      res.status(200).json(result);
-    })
-    .catch((err) => {
-      console.log(err);
-      res.status(500).json({
-        error: err,
-      });
-    });
+  try {
+    const updatedProduct = await Product.update(
+      { _id: id },
+      { $set: updateOps }
+    );
+
+    res.json(updatedProduct);
+  } catch (error) {
+    console.log(error);
+    res.json({ error: error });
+  }
 });
 
-router.delete("/:id", (req, res, next) => {
+/**
+ * @swagger
+ * /products/{id}:
+ *   delete:
+ *     parameters:
+ *      - in: path
+ *        name: id
+ *        required: true
+ *        type: string
+ *        description: The product ID.
+ *     description: Delete a product by id
+ *     responses:
+ *       200:
+ *         description: Returns the requested product
+ */
+
+router.delete("/:id", async (req, res, next) => {
   const id = req.params.id;
-  Product.remove({ _id: id })
-    .exec()
-    .then((result) => {
-      res.status(200).json(result);
-    })
-    .catch((err) => {
-      console.log(err);
-      res.status(500).json({
-        error: err,
-      });
+  try {
+    const removedProduct = await Product.remove({ _id: id });
+
+    res.status(200).json(removedProduct);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      error: error,
     });
+  }
 });
 
 module.exports = router;

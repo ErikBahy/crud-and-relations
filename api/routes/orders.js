@@ -2,17 +2,28 @@ const express = require("express");
 const { parseMapToJSON } = require("source-map-resolve");
 const router = express.Router();
 const Order = require("./models/Order");
+const Product = require("./models/Product");
 
-// Route to get all reviews
-router.get("/", function (req, res) {
-  Order.find({})
-    .then((orders) => {
-      res.json(orders);
-    })
-    .catch((err) => {
-      res.json(err);
-    });
+// Route to get all orders
+/**
+ * @swagger
+ * /orders:
+ *   get:
+ *     description: All orders
+ *     responses:
+ *       200:
+ *         description: Returns all the orders
+ */
+
+router.get("/", async (req, res, next) => {
+  try {
+    res.json(await Order.find());
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: err });
+  }
 });
+
 router.post("/", (req, res, next) => {
   const order = {
     productId: req.body.productId,
@@ -30,11 +41,35 @@ router.patch("/:orderId", (req, res, next) => {
     orderId: req.params.orderID,
   });
 });
-router.delete("/:orderId", (req, res, next) => {
-  res.status(200).json({
-    message: "order delet",
-    orderId: req.params.orderID,
-  });
+
+/**
+ * @swagger
+ * /orders/{id}:
+ *   delete:
+ *     parameters:
+ *      - in: path
+ *        name: id
+ *        required: true
+ *        type: string
+ *        description: The order ID.
+ *     description: Delete an order by id
+ *     responses:
+ *       200:
+ *         description: deletes the requested order
+ */
+
+router.delete("/:orderId", async (req, res, next) => {
+  const orderId = req.params.orderId;
+  try {
+    const removedOrder = await Order.remove({ _id: orderId });
+
+    res.status(200).json(removedOrder);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      error: error,
+    });
+  }
 });
 
 module.exports = router;

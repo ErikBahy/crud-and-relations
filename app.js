@@ -8,6 +8,24 @@ mongoose.connect(
     process.env.MONGO_ATLAS_PW +
     "@cluster0.qpekh4p.mongodb.net/?retryWrites=true&w=majority"
 );
+const swaggerJsDoc = require("swagger-jsdoc");
+const swaggerUi = require("swagger-ui-express");
+const swaggerOptions = {
+  swaggerDefinition: {
+    info: {
+      title: "products REST API",
+      description: "A REST API built with Express and MongoDB. ",
+    },
+    servers: [
+      {
+        url: "http://localhost:3000",
+      },
+    ],
+  },
+  apis: ["./api/routes/*.js"],
+};
+const swaggerDocs = swaggerJsDoc(swaggerOptions);
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 const productRoutes = require("./api/routes/products");
 const orderRoutes = require("./api/routes/orders");
