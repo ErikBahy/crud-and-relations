@@ -72,7 +72,11 @@ router.post("/", async (req, res) => {
     const newProduct = new Product({
       _id: new mongoose.Types.ObjectId(),
       name: req.body.name,
+      title: req.body.title,
+      img: req.body.img,
       price: req.body.price,
+      company: req.body.company,
+      info: req.body.info,
     });
     await newProduct.save();
     res.json(newProduct);
@@ -170,7 +174,7 @@ router.get("/:id", async (req, res) => {
   try {
     const populateProduct = await Product.findOne({
       _id: req.params.id,
-    }).populate("orders");
+    }); //.populate("orders");
     res.json(populateProduct);
   } catch (error) {
     res.json(error);
@@ -205,14 +209,12 @@ router.get("/:id", async (req, res) => {
 
 router.patch("/:id", async (req, res, next) => {
   const id = req.params.id;
-  const updateOps = {};
-  for (const ops of req.body) {
-    updateOps[ops.propName] = ops.value;
-  }
+
   try {
-    const updatedProduct = await Product.update(
-      { _id: id },
-      { $set: updateOps }
+    const updatedProduct = await Product.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true }
     );
 
     res.json(updatedProduct);

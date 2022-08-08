@@ -29,6 +29,8 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 const productRoutes = require("./api/routes/products");
 const orderRoutes = require("./api/routes/orders");
+const importData = require("./importData");
+const shoppingCartRoutes = require("./api/routes/shoppingCartController");
 
 app.use(morgan("dev"));
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -52,6 +54,8 @@ app.use((req, res, next) => {
 
 app.use("/products", productRoutes);
 app.use("/orders", orderRoutes);
+app.use("/api/import", importData);
+app.use("/shoppingCart", shoppingCartRoutes);
 
 app.use((req, res, next) => {
   const error = new Error("not found");

@@ -2,9 +2,15 @@ const mongoose = require("mongoose");
 
 const productSchema = mongoose.Schema({
   _id: mongoose.Schema.Types.ObjectId,
-  name: String,
+  title: String,
+  img: String,
   price: Number,
-  orders: [{ type: mongoose.Schema.Types.ObjectId, ref: "Order" }],
+  company: String,
+  info: String,
+  inCart: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 module.exports = mongoose.model("Product", productSchema);

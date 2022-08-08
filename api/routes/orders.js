@@ -62,6 +62,7 @@ router.delete("/:orderId", async (req, res, next) => {
   const orderId = req.params.orderId;
   try {
     const removedOrder = await Order.remove({ _id: orderId });
+    Product.find();
 
     res.status(200).json(removedOrder);
   } catch (error) {
