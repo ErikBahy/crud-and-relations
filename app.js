@@ -3,11 +3,23 @@ const app = express();
 const morgan = require("morgan");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
+const serverless = require("serverless-http");
+//const http = require("http");
+//const app = require("./app");
+
+var cors = require("cors");
+app.use(cors());
+
+//const port = process.env.PORT || 3000;
+
+//const server = http.createServer(app);
+
 mongoose.connect(
   "mongodb+srv://erik:" +
     process.env.MONGO_ATLAS_PW +
     "@cluster0.qpekh4p.mongodb.net/?retryWrites=true&w=majority"
 );
+//app.listen(3000, () => console.log(`Listening on: 3000`));
 const swaggerJsDoc = require("swagger-jsdoc");
 const swaggerUi = require("swagger-ui-express");
 const swaggerOptions = {
@@ -28,7 +40,7 @@ const swaggerDocs = swaggerJsDoc(swaggerOptions);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 const productRoutes = require("./api/routes/products");
-const orderRoutes = require("./api/routes/orders");
+
 const importData = require("./importData");
 const shoppingCartRoutes = require("./api/routes/shoppingCartController");
 
@@ -53,7 +65,7 @@ app.use((req, res, next) => {
 });
 
 app.use("/products", productRoutes);
-app.use("/orders", orderRoutes);
+
 app.use("/api/import", importData);
 app.use("/shoppingCart", shoppingCartRoutes);
 
@@ -70,5 +82,4 @@ app.use((error, req, res, next) => {
     },
   });
 });
-
-module.exports = app;
+module.exports.handler = serverless(app);
