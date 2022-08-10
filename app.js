@@ -4,6 +4,7 @@ const morgan = require("morgan");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const serverless = require("serverless-http");
+require("dotenv").config();
 //const http = require("http");
 //const app = require("./app");
 
@@ -14,11 +15,9 @@ app.use(cors());
 
 //const server = http.createServer(app);
 
-mongoose.connect(
-  "mongodb+srv://erik:" +
-    process.env.MONGO_ATLAS_PW +
-    "@cluster0.qpekh4p.mongodb.net/?retryWrites=true&w=majority"
-);
+mongoose.connect(process.env.MONGO_CONNECTION, () => {
+  console.log("connected to database");
+});
 //app.listen(3000, () => console.log(`Listening on: 3000`));
 const swaggerJsDoc = require("swagger-jsdoc");
 const swaggerUi = require("swagger-ui-express");

@@ -1,5 +1,5 @@
 {
   "env": {
-    "MONGO_ATLAS_PW": "erikcoc98"
+    "MONGO_ATLAS_PW": "mongodb+srv://erik:erikcoc98@cluster0.qpekh4p.mongodb.net/?retryWrites=true&w=majority"
   }
 }
