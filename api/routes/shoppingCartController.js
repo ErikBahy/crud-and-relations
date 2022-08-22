@@ -55,16 +55,16 @@ router.get("/", async (req, res, next) => {
 //     }
 //   });
 
-router.post("/", async (req, res) => {
+router.post("/:id", async (req, res) => {
   const productId = req.body._id;
 
   console.log(productId);
 
-  const userId = "5de7ffa74fff640a0491bc4f"; //TODO: the logged in user id
+  const userId = req.params.id; //TODO: the logged in user id
 
   try {
     let carts = await ShoppingCart.findOne({
-      user: { _id: new ObjectId(userId) },
+      user: userId,
       product: { _id: new ObjectId(productId) },
     });
     console.log(carts);
@@ -84,7 +84,7 @@ router.post("/", async (req, res) => {
 
       ShoppingCart.init();
       const newCart = new ShoppingCart({
-        user: { _id: new ObjectId(userId) },
+        user: req.params.id,
         product: { _id: new ObjectId(productId) },
         quantity: 1,
       });
@@ -98,16 +98,16 @@ router.post("/", async (req, res) => {
   }
 });
 
-router.post("/decrement", async (req, res) => {
+router.post("/decrement/:id", async (req, res) => {
   const productId = req.body._id;
 
   console.log(productId);
 
-  const userId = "5de7ffa74fff640a0491bc4f"; //TODO: the logged in user id
+  const userId = req.params.id; //TODO: the logged in user id
 
   try {
     let carts = await ShoppingCart.findOne({
-      user: { _id: new ObjectId(userId) },
+      user: userId,
       product: { _id: new ObjectId(productId) },
     });
     console.log(carts);
@@ -132,8 +132,8 @@ router.post("/decrement", async (req, res) => {
 });
 router.get("/:id", async (req, res) => {
   try {
-    const populateCart = await ShoppingCart.findOne({
-      _id: new ObjectId(req.params.id),
+    const populateCart = await ShoppingCart.find({
+      user: req.params.id,
     }).populate("product");
     res.json(populateCart);
   } catch (error) {

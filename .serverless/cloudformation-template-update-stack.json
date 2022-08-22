@@ -161,7 +161,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/shopping-cart/dev/1660060800197-2022-08-09T16:00:00.197Z/shopping-cart.zip"
+          "S3Key": "serverless/shopping-cart/dev/1660828983881-2022-08-18T13:23:03.881Z/shopping-cart.zip"
         },
         "Handler": "app.handler",
         "Runtime": "nodejs16.x",
@@ -179,14 +179,14 @@
         "AppLogGroup"
       ]
     },
-    "AppLambdaVersiontbrNDb28rOwoPQyRpXxGmVtoNSNIfMiViRFXLJ9bA": {
+    "AppLambdaVersionIu0C35iArVK82FGJVIfDipTLMwXv7fPK3UJUz64gsKg": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "AppLambdaFunction"
         },
-        "CodeSha256": "V+KJPDLALIWyATt0nazezfmndbvg/PWOjMtLoR3U2a4="
+        "CodeSha256": "OQbRmbQI1kCPQ89NpK9WWE2GQgFTS4GpFh1OAv+uFns="
       }
     },
     "ApiGatewayRestApi": {
@@ -404,7 +404,7 @@
         "AppLambdaPermissionApiGateway"
       ]
     },
-    "ApiGatewayDeployment1660060712435": {
+    "ApiGatewayDeployment1660828913927": {
       "Type": "AWS::ApiGateway::Deployment",
       "Properties": {
         "RestApiId": {
@@ -469,7 +469,7 @@
     "AppLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "AppLambdaVersiontbrNDb28rOwoPQyRpXxGmVtoNSNIfMiViRFXLJ9bA"
+        "Ref": "AppLambdaVersionIu0C35iArVK82FGJVIfDipTLMwXv7fPK3UJUz64gsKg"
       },
       "Export": {
         "Name": "sls-shopping-cart-dev-AppLambdaFunctionQualifiedArn"
